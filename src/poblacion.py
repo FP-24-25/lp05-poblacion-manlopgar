@@ -1,6 +1,8 @@
 from collections import namedtuple
 import csv
 
+from matplotlib import pyplot as plt
+
 RegistroPoblacion = namedtuple('RegistroPoblacion', 'pais, codigo, año, censo')
 
 def lee_poblaciones(ruta_fichero: str) -> list:
@@ -79,3 +81,46 @@ def filtra_por_paises_y_año(poblaciones: list, año: int, paises: set) -> list:
             lista_pais_numHab.append((e.pais, e.censo))
     
     return lista_pais_numHab
+
+def muestra_evolucion_poblacion(poblaciones: list, nombre_o_codigo: str) -> None:
+    """toma una lista de tuplas de tipo RegistroPoblacion y el nombre o código de un país, y genera una gráfica con la curva de evolución de la población del país dado como parámetro.
+
+    :param poblaciones: lista de tuplas de tipo RegistroPoblacion
+    :type poblaciones: list
+    :param nombre_o_codigo: nombre o código de un país
+    :type nombre_o_codigo: str
+    """    
+
+    lista_años = []
+    lista_habitantes = []
+    for a in poblaciones:
+        if nombre_o_codigo in (a.pais, a.codigo):
+            lista_años.append(a.año)
+            lista_habitantes.append(a.censo)
+    
+    plt.title(f'Evolución de la población en {nombre_o_codigo}')
+    plt.plot(lista_años, lista_habitantes)
+    plt.show()
+
+def muestra_comparativa_paises_año(poblaciones:list , año: int, paises: set) -> None:
+    """toma una lista de tuplas de tipo RegistroPoblacion, un año y un conjunto de nombres de países y genera una gráfica de barras con la población de esos países en el año dado como parámetro.
+    
+    :param poblaciones: lista de tuplas de tipo RegistroPoblacion
+    :type poblaciones: list
+    :param año: un año
+    :type año: int
+    :param paises: conjunto de nombres de paises 
+    :type paises: set 
+    """    
+    lista_paises = []
+    lista_habitantes = []
+    for i in poblaciones: 
+        if (i.año == año) and (i.pais in paises):
+            lista_paises.append(i.pais)
+            lista_habitantes.append(i.censo)
+    
+    paises_cadena = ', '.join(list(paises)) #covertir el conjunto de paises a una cadena de ellos unidos por coma.
+
+    plt.title(f'Comparativa de población en {año} entre {paises_cadena} ')
+    plt.bar(lista_paises, lista_habitantes)
+    plt.show()
